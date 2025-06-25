@@ -3,7 +3,6 @@
 pragma solidity ^0.8.26;
 
 contract SimpleGame {
-
     error playerAlreadyRegistered();
     error playerNotRegistered();
     error insufficientGold();
@@ -18,9 +17,9 @@ contract SimpleGame {
         uint256 gold;
     }
 
-    mapping (address => player) public players;
-    mapping (address => bool) public isPlayerRegistered;
-    mapping (address => mapping (uint256 => uint256)) public playerScores; // address => (gameId => score)
+    mapping(address => player) public players;
+    mapping(address => bool) public isPlayerRegistered;
+    mapping(address => mapping(uint256 => uint256)) public playerScores; // address => (gameId => score)
 
     event PlayerRegistered(address indexed playerAddress, string name);
     event PlayerLevelUp(address indexed playerAddress, uint256 newLevel);
@@ -41,7 +40,7 @@ contract SimpleGame {
             experience: 0,
             health: 100, // Default health
             gold: 50 // Starting gold
-        });
+         });
         isPlayerRegistered[msg.sender] = true;
 
         emit PlayerRegistered(msg.sender, name);
@@ -79,7 +78,7 @@ contract SimpleGame {
         if (quantity == 0) {
             revert invalidAmount();
         }
-        
+
         uint256 basePrice = getItemPrice(itemId);
         uint256 cost = basePrice * quantity; // Simplified cost calculation
 
@@ -94,17 +93,15 @@ contract SimpleGame {
         emit ItemPurchased(msg.sender, itemId, quantity);
     }
 
-    function getPlayerStats() external view returns (
-        string memory name,
-        uint256 level,
-        uint256 experience,
-        uint256 gold,
-        uint256 health
-    ) {
+    function getPlayerStats()
+        external
+        view
+        returns (string memory name, uint256 level, uint256 experience, uint256 gold, uint256 health)
+    {
         if (!isPlayerRegistered[msg.sender]) {
             revert playerNotRegistered();
         }
-        
+
         player storage p = players[msg.sender];
         return (p.name, p.level, p.experience, p.gold, p.health);
     }

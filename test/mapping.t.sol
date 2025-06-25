@@ -22,7 +22,6 @@ contract SimpleGameTest is Test {
     }
 
     function testPlayerRegisttration() public {
-        
         vm.expectEmit(true, false, false, true);
         emit PlayerRegistered(alice, "Alice");
 
@@ -31,8 +30,7 @@ contract SimpleGameTest is Test {
         assertTrue(game.isPlayerRegistered(alice));
 
         vm.prank(alice);
-        (string memory name, uint256 level, uint256 experience, uint256 gold, uint256 health) =
-            game.getPlayerStats();
+        (string memory name, uint256 level, uint256 experience, uint256 gold, uint256 health) = game.getPlayerStats();
 
         assertEq(name, "Alice");
         assertEq(level, 1);
@@ -44,7 +42,7 @@ contract SimpleGameTest is Test {
     function testCannotRegisterTwice() public {
         vm.prank(alice);
         game.registerPlayer("Alice");
-        
+
         vm.prank(alice);
         vm.expectRevert(SimpleGame.playerAlreadyRegistered.selector);
         game.registerPlayer("Alice");
@@ -83,7 +81,7 @@ contract SimpleGameTest is Test {
 
         game.buyItem(1, 2);
 
-        (, , , uint256 gold, ) = game.getPlayerStats();
+        (,,, uint256 gold,) = game.getPlayerStats();
         assertEq(gold, 50 - (2 * 10)); // Assuming item costs 10 gold each
 
         vm.stopPrank();
@@ -92,26 +90,26 @@ contract SimpleGameTest is Test {
     function testInsufficientGold() public {
         vm.startPrank(alice);
         game.registerPlayer("Alice");
-        
+
         // Try to buy expensive item (ID 101, price = 100 each)
         vm.expectRevert(SimpleGame.insufficientGold.selector);
         game.buyItem(101, 1); // Costs 100, but only have 50
-        
+
         vm.stopPrank();
     }
 
     function testUnregisteredPlayerActions() public {
         vm.startPrank(alice);
-        
+
         vm.expectRevert(SimpleGame.playerNotRegistered.selector);
         game.gainExperience(50);
-        
+
         vm.expectRevert(SimpleGame.playerNotRegistered.selector);
         game.buyItem(1, 1);
-        
+
         vm.expectRevert(SimpleGame.playerNotRegistered.selector);
         game.getPlayerStats();
-        
+
         vm.stopPrank();
     }
 
@@ -120,11 +118,11 @@ contract SimpleGameTest is Test {
         (string memory name, uint256 level) = game.getPlayerInfo(alice);
         assertEq(bytes(name).length, 0);
         assertEq(level, 0);
-        
+
         // Register and check again
         vm.prank(alice);
         game.registerPlayer("Alice");
-        
+
         (name, level) = game.getPlayerInfo(alice);
         assertEq(name, "Alice");
         assertEq(level, 1);
@@ -134,52 +132,52 @@ contract SimpleGameTest is Test {
         // Register two players
         vm.prank(alice);
         game.registerPlayer("Alice");
-        
+
         vm.prank(bob);
         game.registerPlayer("Bob");
-        
+
         // Alice gains experience
         vm.prank(alice);
         game.gainExperience(200);
-        
+
         // Check Alice is level 3
         vm.prank(alice);
-        (, uint256 aliceLevel, , ,) = game.getPlayerStats();
+        (, uint256 aliceLevel,,,) = game.getPlayerStats();
         assertEq(aliceLevel, 3);
-        
+
         // Check Bob is still level 1
         vm.prank(bob);
-        (, uint256 bobLevel, , ,) = game.getPlayerStats();
+        (, uint256 bobLevel,,,) = game.getPlayerStats();
         assertEq(bobLevel, 1);
     }
 
     function testFuzzPlayerRegistration(string memory name) public {
         vm.assume(bytes(name).length > 0);
         vm.assume(bytes(name).length < 100); // Reasonable limit
-        
+
         vm.prank(alice);
         game.registerPlayer(name);
-        
+
         assertTrue(game.isPlayerRegistered(alice));
-        
+
         vm.prank(alice);
-        (string memory retrievedName, , , ,) = game.getPlayerStats();
+        (string memory retrievedName,,,,) = game.getPlayerStats();
         assertEq(retrievedName, name);
     }
 
     function testFuzzExperienceGain(uint256 exp) public {
         vm.assume(exp > 0);
-        vm.assume(exp < 10000); // Reasonable limit to avoid overflow
-        
+        vm.assume(exp < 10_000); // Reasonable limit to avoid overflow
+
         vm.prank(alice);
         game.registerPlayer("Alice");
-        
+
         vm.prank(alice);
         game.gainExperience(exp);
-        
+
         vm.prank(alice);
-        (, uint256 level, uint256 totalExp, ,) = game.getPlayerStats();
-        
+        (, uint256 level, uint256 totalExp,,) = game.getPlayerStats();
+
         assertEq(totalExp, exp);
         assertEq(level, (exp / 100) + 1);
     }
