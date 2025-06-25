@@ -3,19 +3,17 @@
 pragma solidity 0.8.26;
 
 contract BasicTypes {
-
     // 1. uint = unsigned integer (positif only)
     uint256 public myBigNumber = 1000; // uint256 = 2^256 - 1, max: 115792089237316195423570985008687907853269984665640564039457584007913129639935
-    uint public anotherNumber = 500; // uint = uint256, default 256 bit
+    uint256 public anotherNumber = 500; // uint = uint256, default 256 bit
 
     uint8 public smallNumber = 255; // max: 255
-    uint16 public mediumNumber = 65535; // max: 65,535
-    
+    uint16 public mediumNumber = 65_535; // max: 65,535
 
     // 2. int = signed integer ( negatif and positif)
 
     int256 public temperature = -10;
-    int public score = 95;
+    int256 public score = 95;
     int8 public smallInt = -50; // Range: -128 to 127
 
     // 3. boolean = true or false
@@ -57,12 +55,7 @@ contract BasicTypes {
 
     // function for testing
 
-    function updateValues(
-        uint256 _number,
-        int _temp,
-        bool _active,
-        string memory _name
-    ) external {
+    function updateValues(uint256 _number, int256 _temp, bool _active, string memory _name) external {
         myBigNumber = _number;
         temperature = _temp;
         isActive = _active;
@@ -71,45 +64,19 @@ contract BasicTypes {
 
     // look default values
 
-    function getDefaultValues() external pure returns (
-        uint256,
-        int256,
-        bool,
-        string memory,
-        address
-     ) {
-        return (
-            0,
-            0,
-            false,
-            "",
-            address(0)
-        );
+    function getDefaultValues() external pure returns (uint256, int256, bool, string memory, address) {
+        return (0, 0, false, "", address(0));
     }
 
-    function demonstrateBitsBytes() external pure returns (
-        uint8,
-        uint16,
-        uint256,
-        bytes1,
-        bytes32
-    ) {
-        return (
-            uint8(255),
-            uint16(65535),
-            type(uint256).max,
-            bytes1(0xff),
-            bytes32("hello world!")
-        );
+    function demonstrateBitsBytes() external pure returns (uint8, uint16, uint256, bytes1, bytes32) {
+        return (uint8(255), uint16(65_535), type(uint256).max, bytes1(0xff), bytes32("hello world!"));
     }
 
-    function getContractInfo() external view returns (
-        address contractAddress,
-        address contractOwner,
-        uint256 blockNumber,
-        uint256 timestamp,
-        address caller
-    ) {
+    function getContractInfo()
+        external
+        view
+        returns (address contractAddress, address contractOwner, uint256 blockNumber, uint256 timestamp, address caller)
+    {
         return (
             address(this), // address this contract
             owner, // address owner
@@ -119,11 +86,11 @@ contract BasicTypes {
         );
     }
 
-    function processString(string memory input) external pure returns (
-        uint256 length,
-        bytes memory bytesData,
-        bytes32 hashedData
-    ) {
+    function processString(string memory input)
+        external
+        pure
+        returns (uint256 length, bytes memory bytesData, bytes32 hashedData)
+    {
         length = bytes(input).length;
         bytesData = bytes(input);
         hashedData = keccak256(bytesData);
@@ -140,5 +107,4 @@ contract BasicTypes {
     fallback() external payable {
         // this function will be called when the contract receives ether with data or when a function is not found
     }
-
 }

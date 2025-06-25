@@ -7,13 +7,13 @@ import "../src/Counter.sol";
 contract Deploy is Script {
     function run() external {
         vm.startBroadcast();
-        
+
         Counter counter = new Counter();
-        
+
         console.log("Counter deployed to:", address(counter));
         console.log("Initial value:", counter.getCounter());
         console.log("Owner:", counter.owner());
-        
+
         vm.stopBroadcast();
     }
 }

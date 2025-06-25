@@ -14,12 +14,11 @@ contract BasicTypesTest is Test {
     address public constant BOB = address(0x2); // Bob's address
 
     // Event for testing value updates
-    event ValueUpdated(
-        address indexed updater, // Who updated the value
-        uint256 indexed newNumber, // The new number set
-        bool newActive, // The new active status
-        string newName // The new name set
-    );
+    event ValueUpdated( // Who updated the value
+        // The new number set
+        // The new active status
+        // The new name set
+    address indexed updater, uint256 indexed newNumber, bool newActive, string newName);
 
     function setUp() public {
         basicTypes = new BasicTypes(); // Deploy a new contract for each test
@@ -37,7 +36,7 @@ contract BasicTypesTest is Test {
         assertEq(basicTypes.myBigNumber(), 1000); // Should be 1000
         assertEq(basicTypes.anotherNumber(), 500); // Should be 500
         assertEq(basicTypes.smallNumber(), 255); // Max value for uint8
-        assertEq(basicTypes.mediumNumber(), 65535); // Max value for uint16
+        assertEq(basicTypes.mediumNumber(), 65_535); // Max value for uint16
     }
 
     function testuintBoundaries() public view {
@@ -75,10 +74,7 @@ contract BasicTypesTest is Test {
 
     // BYTES TESTS - test for bytes data types
     function testBytesTypes() public view {
-        assertEq(
-            basicTypes.dataHash(),
-            0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-        ); // 32 bytes hash
+        assertEq(basicTypes.dataHash(), 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef); // 32 bytes hash
         assertEq(basicTypes.singleByte(), bytes1(0xff)); // Single byte max value
         assertEq(basicTypes.functionSelector(), bytes4(0x12345678)); // 4 bytes selector
         assertEq(basicTypes.dynamicBytes(), "hello"); // Dynamic bytes
@@ -119,16 +115,11 @@ contract BasicTypesTest is Test {
 
     // BITS AND BYTES TESTS - bits and bytes demo
     function testBitsAndBytesDemo() public view {
-        (
-            uint8 maxUint8,
-            uint16 maxUint16,
-            uint256 maxUint256,
-            bytes1 oneBytes,
-            bytes32 helloBytes
-        ) = basicTypes.demonstrateBitsBytes();
+        (uint8 maxUint8, uint16 maxUint16, uint256 maxUint256, bytes1 oneBytes, bytes32 helloBytes) =
+            basicTypes.demonstrateBitsBytes();
 
         assertEq(maxUint8, 255); // uint8 max value
-        assertEq(maxUint16, 65535); // uint16 max value
+        assertEq(maxUint16, 65_535); // uint16 max value
         assertEq(maxUint256, type(uint256).max); // uint256 max value
         assertEq(oneBytes, bytes1(0xff)); // Single byte max value
         assertEq(helloBytes, bytes32("hello world!")); // "hello world!" as bytes32
@@ -136,13 +127,8 @@ contract BasicTypesTest is Test {
 
     // NEW FUNCTION TESTS - new features
     function testGetContractInfo() public view {
-        (
-            address contractAddress,
-            address contractOwner,
-            uint256 blockNumber,
-            uint256 timestamp,
-            address caller
-        ) = basicTypes.getContractInfo();
+        (address contractAddress, address contractOwner, uint256 blockNumber, uint256 timestamp, address caller) =
+            basicTypes.getContractInfo();
 
         assertEq(contractAddress, address(basicTypes)); // Contract address
         assertEq(contractOwner, address(this)); // Owner address
@@ -153,11 +139,7 @@ contract BasicTypesTest is Test {
 
     function testProcessString() public view {
         string memory testString = "Hello, World!";
-        (
-            uint256 length,
-            bytes memory bytesData,
-            bytes32 hashedData
-        ) = basicTypes.processString(testString);
+        (uint256 length, bytes memory bytesData, bytes32 hashedData) = basicTypes.processString(testString);
 
         assertEq(length, 13); // Length of "Hello, World!"
         assertEq(bytesData, bytes(testString)); // Bytes data matches input
@@ -174,14 +156,14 @@ contract BasicTypesTest is Test {
     // RECEIVE & FALLBACK TESTS
     function testReceiveEther() public {
         uint256 amount = 1 ether; // 1 ETH for testing
-        (bool success, ) = address(basicTypes).call{value: amount}(""); // Send ETH without data
+        (bool success,) = address(basicTypes).call{ value: amount }(""); // Send ETH without data
         assertTrue(success, "Transfer failed"); // Transfer should succeed
         assertEq(address(basicTypes).balance, amount, "Balance should be 1 ether"); // Balance check
     }
 
     function testFallback() public {
         uint256 amount = 0.5 ether; // 0.5 ETH for fallback test
-        (bool success, ) = address(basicTypes).call{value: amount}(
+        (bool success,) = address(basicTypes).call{ value: amount }(
             abi.encodeWithSignature("nonExistentFunction()") // Call non-existent function
         );
         assertTrue(success); // Fallback should handle gracefully
@@ -189,12 +171,7 @@ contract BasicTypesTest is Test {
     }
 
     // FUZZ TESTS
-    function testFuzzUpdateValues(
-        uint256 _number,
-        int256 _temp,
-        bool _active,
-        string memory _name
-    ) public {
+    function testFuzzUpdateValues(uint256 _number, int256 _temp, bool _active, string memory _name) public {
         // Fuzz test logic
         vm.assume(_number > 0 && _number < type(uint256).max); // Valid range
         vm.assume(_temp > type(int128).min && _temp < type(int128).max); // Reasonable temp
@@ -217,6 +194,6 @@ contract BasicTypesTest is Test {
         );
         uint256 gasUsed = gasStart - gasleft(); // Calculate gas used
         console.log("Gas used for updateValues:", gasUsed); // Log gas usage
-        assertTrue(gasUsed < 100000, "Gas usage should be less than 100000"); // Gas efficiency check
+        assertTrue(gasUsed < 100_000, "Gas usage should be less than 100000"); // Gas efficiency check
     }
 }
